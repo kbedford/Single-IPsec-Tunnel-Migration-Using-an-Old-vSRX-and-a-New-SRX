@@ -1,0 +1,322 @@
+root@CE1> show configuration | display set | except groups
+set version 24.2R2-S2.2
+set system host-name CE1
+set system ports console log-out-on-disconnect
+set security ike proposal POC-IKE-PROPOSAL authentication-method pre-shared-keys
+set security ike proposal POC-IKE-PROPOSAL dh-group group14
+set security ike proposal POC-IKE-PROPOSAL authentication-algorithm sha-256
+set security ike proposal POC-IKE-PROPOSAL encryption-algorithm aes-256-cbc
+set security ike proposal POC-IKE-PROPOSAL lifetime-seconds 28800
+set security ike policy POC-IKE-POLICY mode main
+set security ike policy POC-IKE-POLICY proposals POC-IKE-PROPOSAL
+set security ike policy POC-IKE-POLICY pre-shared-key ascii-text "$9$6x6i/pOyrvW87SrWxN-wsHq.mQ3EhyKv8u0WX-d2gkqmfz3/CtpO1F3ev"
+set security ike gateway SHARED-IPSEC-GW ike-policy POC-IKE-POLICY
+set security ike gateway SHARED-IPSEC-GW address 203.0.113.100
+set security ike gateway SHARED-IPSEC-GW dead-peer-detection interval 10
+set security ike gateway SHARED-IPSEC-GW dead-peer-detection threshold 3
+set security ike gateway SHARED-IPSEC-GW no-nat-traversal
+set security ike gateway SHARED-IPSEC-GW local-identity inet 198.51.100.0
+set security ike gateway SHARED-IPSEC-GW external-interface ge-0/0/0.0
+set security ike gateway SHARED-IPSEC-GW local-address 198.51.100.0
+set security ike gateway SHARED-IPSEC-GW version v1-only
+set security ipsec proposal POC-IPSEC-PROPOSAL protocol esp
+set security ipsec proposal POC-IPSEC-PROPOSAL authentication-algorithm hmac-sha-256-128
+set security ipsec proposal POC-IPSEC-PROPOSAL encryption-algorithm aes-256-cbc
+set security ipsec proposal POC-IPSEC-PROPOSAL lifetime-seconds 3600
+set security ipsec policy POC-IPSEC-POLICY perfect-forward-secrecy keys group14
+set security ipsec policy POC-IPSEC-POLICY proposals POC-IPSEC-PROPOSAL
+set security ipsec vpn CE1-VPN bind-interface st0.0
+set security ipsec vpn CE1-VPN ike gateway SHARED-IPSEC-GW
+set security ipsec vpn CE1-VPN ike ipsec-policy POC-IPSEC-POLICY
+set security ipsec vpn CE1-VPN traffic-selector CE1-TS local-ip 10.1.1.0/24
+set security ipsec vpn CE1-VPN traffic-selector CE1-TS remote-ip 10.100.0.0/24
+set security ipsec vpn CE1-VPN establish-tunnels immediately
+set security flow tcp-mss ipsec-vpn mss 1350
+set security policies from-zone LAN to-zone VPN policy LAN-TO-VPN match source-address any
+set security policies from-zone LAN to-zone VPN policy LAN-TO-VPN match destination-address any
+set security policies from-zone LAN to-zone VPN policy LAN-TO-VPN match application any
+set security policies from-zone LAN to-zone VPN policy LAN-TO-VPN then permit
+set security policies from-zone VPN to-zone LAN policy VPN-TO-LAN match source-address any
+set security policies from-zone VPN to-zone LAN policy VPN-TO-LAN match destination-address any
+set security policies from-zone VPN to-zone LAN policy VPN-TO-LAN match application any
+set security policies from-zone VPN to-zone LAN policy VPN-TO-LAN then permit
+set security zones security-zone INTERNET interfaces ge-0/0/0.0 host-inbound-traffic system-services ike
+set security zones security-zone INTERNET interfaces ge-0/0/0.0 host-inbound-traffic system-services ping
+set security zones security-zone LAN interfaces lo0.0 host-inbound-traffic system-services ping
+set security zones security-zone VPN interfaces st0.0
+set interfaces ge-0/0/0 description TO-AS1273-EDGE
+set interfaces ge-0/0/0 unit 0 family inet address 198.51.100.0/31
+set interfaces lo0 unit 0 description CE1-PROTECTED-TEST
+set interfaces lo0 unit 0 family inet address 10.1.1.1/24
+set interfaces st0 unit 0 family inet
+set routing-options static route 0.0.0.0/0 next-hop 198.51.100.1
+set routing-options static route 10.100.0.0/24 next-hop st0.0
+
+
+
+
+root@CE2> show configuration | display set | except group
+set version 24.2R2-S2.2
+set system host-name CE2
+set system ports console log-out-on-disconnect
+set security ike proposal POC-IKE-PROPOSAL authentication-method pre-shared-keys
+set security ike proposal POC-IKE-PROPOSAL authentication-algorithm sha-256
+set security ike proposal POC-IKE-PROPOSAL encryption-algorithm aes-256-cbc
+set security ike proposal POC-IKE-PROPOSAL lifetime-seconds 28800
+set security ike policy POC-IKE-POLICY mode main
+set security ike policy POC-IKE-POLICY proposals POC-IKE-PROPOSAL
+set security ike policy POC-IKE-POLICY pre-shared-key ascii-text "$9$4xoUiTQn/9p5Q/tu0IRLx7Nw2mPT3n9Dj/A0OhcXxNds2oJGUikY2Fn"
+set security ike gateway SHARED-IPSEC-GW ike-policy POC-IKE-POLICY
+set security ike gateway SHARED-IPSEC-GW address 203.0.113.100
+set security ike gateway SHARED-IPSEC-GW dead-peer-detection interval 10
+set security ike gateway SHARED-IPSEC-GW dead-peer-detection threshold 3
+set security ike gateway SHARED-IPSEC-GW no-nat-traversal
+set security ike gateway SHARED-IPSEC-GW local-identity inet 198.51.100.2
+set security ike gateway SHARED-IPSEC-GW external-interface ge-0/0/1.0
+set security ike gateway SHARED-IPSEC-GW local-address 198.51.100.2
+set security ike gateway SHARED-IPSEC-GW version v1-only
+set security ipsec proposal POC-IPSEC-PROPOSAL protocol esp
+set security ipsec proposal POC-IPSEC-PROPOSAL authentication-algorithm hmac-sha-256-128
+set security ipsec proposal POC-IPSEC-PROPOSAL encryption-algorithm aes-256-cbc
+set security ipsec proposal POC-IPSEC-PROPOSAL lifetime-seconds 3600
+set security ipsec policy POC-IPSEC-POLICY proposals POC-IPSEC-PROPOSAL
+set security ipsec vpn CE2-VPN bind-interface st0.0
+set security ipsec vpn CE2-VPN ike gateway SHARED-IPSEC-GW
+set security ipsec vpn CE2-VPN ike ipsec-policy POC-IPSEC-POLICY
+set security ipsec vpn CE2-VPN traffic-selector CE2-TS local-ip 10.2.2.0/24
+set security ipsec vpn CE2-VPN traffic-selector CE2-TS remote-ip 10.100.0.0/24
+set security ipsec vpn CE2-VPN establish-tunnels immediately
+set security flow tcp-mss ipsec-vpn mss 1350
+set security policies from-zone LAN to-zone VPN policy LAN-TO-VPN match source-address any
+set security policies from-zone LAN to-zone VPN policy LAN-TO-VPN match destination-address any
+set security policies from-zone LAN to-zone VPN policy LAN-TO-VPN match application any
+set security policies from-zone LAN to-zone VPN policy LAN-TO-VPN then permit
+set security policies from-zone VPN to-zone LAN policy VPN-TO-LAN match source-address any
+set security policies from-zone VPN to-zone LAN policy VPN-TO-LAN match destination-address any
+set security policies from-zone VPN to-zone LAN policy VPN-TO-LAN match application any
+set security policies from-zone VPN to-zone LAN policy VPN-TO-LAN then permit
+set security zones security-zone INTERNET interfaces ge-0/0/1.0 host-inbound-traffic system-services ike
+set security zones security-zone INTERNET interfaces ge-0/0/1.0 host-inbound-traffic system-services ping
+set security zones security-zone LAN interfaces lo0.0 host-inbound-traffic system-services ping
+set security zones security-zone VPN interfaces st0.0
+set interfaces ge-0/0/1 description TO-AS1273-EDGE
+set interfaces ge-0/0/1 unit 0 family inet address 198.51.100.2/31
+set interfaces lo0 unit 0 description CE2-PROTECTED-TEST
+set interfaces lo0 unit 0 family inet address 10.2.2.1/24
+set interfaces st0 unit 0 family inet
+set routing-options static route 0.0.0.0/0 next-hop 198.51.100.3
+set routing-options static route 10.100.0.0/24 next-hop st0.0
+
+root@AS1273-EDGE> show configuration | display set | except groups
+set version 23.4R2-S3.9
+set system host-name AS1273-EDGE
+set system ports console log-out-on-disconnect
+set interfaces ge-0/0/0 description TO-CE1
+set interfaces ge-0/0/0 unit 0 family inet address 198.51.100.1/31
+set interfaces ge-0/0/1 description TO-CE2
+set interfaces ge-0/0/1 unit 0 family inet address 198.51.100.3/31
+set interfaces ge-0/0/2 description TO-OLD-VSRX-GW
+set interfaces ge-0/0/2 unit 0 family inet address 192.0.2.0/31
+set interfaces ge-0/0/3 description TO-NEW-SRX-GW
+set interfaces ge-0/0/3 unit 0 family inet address 192.0.2.2/31
+set routing-options static route 203.0.113.100/32 next-hop 192.0.2.3
+
+
+root@OLD-VSRX-GW> show configuration | display set | except groups
+set version 24.2R2-S2.2
+set system host-name OLD-VSRX-GW
+set system ports console log-out-on-disconnect
+set security ike proposal POC-IKE-PROPOSAL authentication-method pre-shared-keys
+set security ike proposal POC-IKE-PROPOSAL dh-group group14
+set security ike proposal POC-IKE-PROPOSAL authentication-algorithm sha-256
+set security ike proposal POC-IKE-PROPOSAL encryption-algorithm aes-256-cbc
+set security ike proposal POC-IKE-PROPOSAL lifetime-seconds 28800
+set security ike policy POC-IKE-POLICY mode main
+set security ike policy POC-IKE-POLICY proposals POC-IKE-PROPOSAL
+set security ike policy POC-IKE-POLICY pre-shared-key ascii-text "$9$dBV2oHkP5T3ik5Fn6AtreKvXNUDHmPTg45z6/u0levWxNVwY2oJ7N.P"
+set security ike gateway CE1-GATEWAY ike-policy POC-IKE-POLICY
+set security ike gateway CE1-GATEWAY address 198.51.100.0
+set security ike gateway CE1-GATEWAY dead-peer-detection interval 10
+set security ike gateway CE1-GATEWAY dead-peer-detection threshold 3
+set security ike gateway CE1-GATEWAY no-nat-traversal
+set security ike gateway CE1-GATEWAY local-identity inet 203.0.113.100
+set security ike gateway CE1-GATEWAY external-interface lo0.0
+set security ike gateway CE1-GATEWAY local-address 203.0.113.100
+set security ike gateway CE1-GATEWAY version v1-only
+set security ike gateway CE2-GATEWAY ike-policy POC-IKE-POLICY
+set security ike gateway CE2-GATEWAY address 198.51.100.2
+set security ike gateway CE2-GATEWAY dead-peer-detection interval 10
+set security ike gateway CE2-GATEWAY dead-peer-detection threshold 3
+set security ike gateway CE2-GATEWAY no-nat-traversal
+set security ike gateway CE2-GATEWAY local-identity inet 203.0.113.100
+set security ike gateway CE2-GATEWAY external-interface lo0.0
+set security ike gateway CE2-GATEWAY local-address 203.0.113.100
+set security ike gateway CE2-GATEWAY version v1-only
+set security ipsec proposal POC-IPSEC-PROPOSAL protocol esp
+set security ipsec proposal POC-IPSEC-PROPOSAL authentication-algorithm hmac-sha-256-128
+set security ipsec proposal POC-IPSEC-PROPOSAL encryption-algorithm aes-256-cbc
+set security ipsec proposal POC-IPSEC-PROPOSAL lifetime-seconds 3600
+set security ipsec policy POC-IPSEC-POLICY perfect-forward-secrecy keys group14
+set security ipsec policy POC-IPSEC-POLICY proposals POC-IPSEC-PROPOSAL
+set security ipsec vpn CE1-VPN bind-interface st0.1
+set security ipsec vpn CE1-VPN ike gateway CE1-GATEWAY
+set security ipsec vpn CE1-VPN ike ipsec-policy POC-IPSEC-POLICY
+set security ipsec vpn CE1-VPN traffic-selector CE1-TS local-ip 10.100.0.0/24
+set security ipsec vpn CE1-VPN traffic-selector CE1-TS remote-ip 10.1.1.0/24
+set security ipsec vpn CE2-VPN bind-interface st0.2
+set security ipsec vpn CE2-VPN ike gateway CE2-GATEWAY
+set security ipsec vpn CE2-VPN ike ipsec-policy POC-IPSEC-POLICY
+set security ipsec vpn CE2-VPN traffic-selector CE2-TS local-ip 10.100.0.0/24
+set security ipsec vpn CE2-VPN traffic-selector CE2-TS remote-ip 10.2.2.0/24
+set security flow tcp-mss ipsec-vpn mss 1350
+set security policies from-zone TRANSPORT to-zone VPN policy TRANSPORT-TO-VPN match source-address any
+set security policies from-zone TRANSPORT to-zone VPN policy TRANSPORT-TO-VPN match destination-address any
+set security policies from-zone TRANSPORT to-zone VPN policy TRANSPORT-TO-VPN match application any
+set security policies from-zone TRANSPORT to-zone VPN policy TRANSPORT-TO-VPN then permit
+set security policies from-zone VPN to-zone TRANSPORT policy VPN-TO-TRANSPORT match source-address any
+set security policies from-zone VPN to-zone TRANSPORT policy VPN-TO-TRANSPORT match destination-address any
+set security policies from-zone VPN to-zone TRANSPORT policy VPN-TO-TRANSPORT match application any
+set security policies from-zone VPN to-zone TRANSPORT policy VPN-TO-TRANSPORT then permit
+set security policies from-zone TRANSPORT to-zone TRANSPORT policy TRANSPORT-INTRAZONE match source-address any
+set security policies from-zone TRANSPORT to-zone TRANSPORT policy TRANSPORT-INTRAZONE match destination-address any
+set security policies from-zone TRANSPORT to-zone TRANSPORT policy TRANSPORT-INTRAZONE match application any
+set security policies from-zone TRANSPORT to-zone TRANSPORT policy TRANSPORT-INTRAZONE then permit
+set security zones security-zone TRANSPORT interfaces ge-0/0/2.0 host-inbound-traffic system-services ike
+set security zones security-zone TRANSPORT interfaces ge-0/0/2.0 host-inbound-traffic system-services ping
+set security zones security-zone TRANSPORT interfaces ge-0/0/5.0 host-inbound-traffic system-services ike
+set security zones security-zone TRANSPORT interfaces ge-0/0/5.0 host-inbound-traffic system-services ping
+set security zones security-zone TRANSPORT interfaces lo0.0 host-inbound-traffic system-services ike
+set security zones security-zone TRANSPORT interfaces lo0.0 host-inbound-traffic system-services ping
+set security zones security-zone VPN interfaces st0.1
+set security zones security-zone VPN interfaces st0.2
+set interfaces ge-0/0/2 description TO-AS1273-EDGE
+set interfaces ge-0/0/2 unit 0 family inet address 192.0.2.1/31
+set interfaces ge-0/0/5 description TO-IPBB-CORE
+set interfaces ge-0/0/5 unit 0 family inet address 10.44.0.0/31
+set interfaces lo0 unit 0 description SHARED-IPSEC-ENDPOINT
+set interfaces lo0 unit 0 family inet address 203.0.113.100/32
+set interfaces st0 unit 1 family inet
+set interfaces st0 unit 2 family inet
+set routing-options static route 0.0.0.0/0 next-hop 192.0.2.0
+set routing-options static route 10.1.1.0/24 next-hop st0.1
+set routing-options static route 10.2.2.0/24 next-hop st0.2
+set routing-options static route 10.100.0.0/24 next-hop 10.44.0.1
+
+root@NEW-SRX-GW> show configuration | display set | except groups
+set version 24.2R2-S2.2
+set system host-name NEW-SRX-GW
+set system ports console log-out-on-disconnect
+set security ike proposal POC-IKE-PROPOSAL authentication-method pre-shared-keys
+set security ike proposal POC-IKE-PROPOSAL dh-group group14
+set security ike proposal POC-IKE-PROPOSAL authentication-algorithm sha-256
+set security ike proposal POC-IKE-PROPOSAL encryption-algorithm aes-256-cbc
+set security ike proposal POC-IKE-PROPOSAL lifetime-seconds 28800
+set security ike policy POC-IKE-POLICY mode main
+set security ike policy POC-IKE-POLICY proposals POC-IKE-PROPOSAL
+set security ike policy POC-IKE-POLICY pre-shared-key ascii-text "$9$3bXDnAucSevMXhSvLx7VbjHkq5zIRcleMtpv87NsYiHqmTzn/CAuOQzre"
+set security ike gateway CE1-GATEWAY ike-policy POC-IKE-POLICY
+set security ike gateway CE1-GATEWAY address 198.51.100.0
+set security ike gateway CE1-GATEWAY dead-peer-detection interval 10
+set security ike gateway CE1-GATEWAY dead-peer-detection threshold 3
+set security ike gateway CE1-GATEWAY no-nat-traversal
+set security ike gateway CE1-GATEWAY local-identity inet 203.0.113.100
+set security ike gateway CE1-GATEWAY external-interface lo0.0
+set security ike gateway CE1-GATEWAY local-address 203.0.113.100
+set security ike gateway CE1-GATEWAY version v1-only
+set security ipsec proposal POC-IPSEC-PROPOSAL protocol esp
+set security ipsec proposal POC-IPSEC-PROPOSAL authentication-algorithm hmac-sha-256-128
+set security ipsec proposal POC-IPSEC-PROPOSAL encryption-algorithm aes-256-cbc
+set security ipsec proposal POC-IPSEC-PROPOSAL lifetime-seconds 3600
+set security ipsec policy POC-IPSEC-POLICY perfect-forward-secrecy keys group14
+set security ipsec policy POC-IPSEC-POLICY proposals POC-IPSEC-PROPOSAL
+set security ipsec vpn CE1-VPN bind-interface st0.1
+set security ipsec vpn CE1-VPN ike gateway CE1-GATEWAY
+set security ipsec vpn CE1-VPN ike ipsec-policy POC-IPSEC-POLICY
+set security ipsec vpn CE1-VPN traffic-selector CE1-TS local-ip 10.100.0.0/24
+set security ipsec vpn CE1-VPN traffic-selector CE1-TS remote-ip 10.1.1.0/24
+set security flow tcp-mss ipsec-vpn mss 1350
+set security policies from-zone TRANSPORT to-zone TRANSPORT policy TROMBONE-OUTER-IPSEC match source-address any
+set security policies from-zone TRANSPORT to-zone TRANSPORT policy TROMBONE-OUTER-IPSEC match destination-address any
+set security policies from-zone TRANSPORT to-zone TRANSPORT policy TROMBONE-OUTER-IPSEC match application any
+set security policies from-zone TRANSPORT to-zone TRANSPORT policy TROMBONE-OUTER-IPSEC then permit
+set security policies from-zone TRANSPORT to-zone VPN policy TRANSPORT-TO-VPN match source-address any
+set security policies from-zone TRANSPORT to-zone VPN policy TRANSPORT-TO-VPN match destination-address any
+set security policies from-zone TRANSPORT to-zone VPN policy TRANSPORT-TO-VPN match application any
+set security policies from-zone TRANSPORT to-zone VPN policy TRANSPORT-TO-VPN then permit
+set security policies from-zone VPN to-zone TRANSPORT policy VPN-TO-TRANSPORT match source-address any
+set security policies from-zone VPN to-zone TRANSPORT policy VPN-TO-TRANSPORT match destination-address any
+set security policies from-zone VPN to-zone TRANSPORT policy VPN-TO-TRANSPORT match application any
+set security policies from-zone VPN to-zone TRANSPORT policy VPN-TO-TRANSPORT then permit
+set security zones security-zone TRANSPORT interfaces ge-0/0/3.0 host-inbound-traffic system-services ike
+set security zones security-zone TRANSPORT interfaces ge-0/0/3.0 host-inbound-traffic system-services ping
+set security zones security-zone TRANSPORT interfaces ge-0/0/4.0 host-inbound-traffic system-services ike
+set security zones security-zone TRANSPORT interfaces ge-0/0/4.0 host-inbound-traffic system-services ping
+set security zones security-zone TRANSPORT interfaces lo0.0 host-inbound-traffic system-services ike
+set security zones security-zone TRANSPORT interfaces lo0.0 host-inbound-traffic system-services ping
+set security zones security-zone VPN interfaces st0.1
+set interfaces ge-0/0/3 description TO-AS1273-EDGE
+set interfaces ge-0/0/3 unit 0 family inet filter input IPSEC-TROMBONE
+set interfaces ge-0/0/3 unit 0 family inet address 192.0.2.3/31
+set interfaces ge-0/0/4 description TO-IPBB-CORE
+set interfaces ge-0/0/4 unit 0 family inet address 10.44.0.2/31
+set interfaces lo0 unit 0 description SHARED-IPSEC-ENDPOINT
+set interfaces lo0 unit 0 family inet address 203.0.113.100/32
+set interfaces st0 unit 1 family inet
+set policy-options prefix-list OLD-PEERS 198.51.100.0/32
+deactivate policy-options prefix-list OLD-PEERS 198.51.100.0/32
+set policy-options prefix-list OLD-PEERS 198.51.100.2/32
+set policy-options policy-statement TROMBONE-IMPORT term IPBB-CONNECTED from protocol direct
+set policy-options policy-statement TROMBONE-IMPORT term IPBB-CONNECTED from route-filter 10.44.0.2/31 exact
+set policy-options policy-statement TROMBONE-IMPORT term IPBB-CONNECTED then accept
+set policy-options policy-statement TROMBONE-IMPORT term REJECT then reject
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-IKE from destination-address 203.0.113.100/32
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-IKE from source-prefix-list OLD-PEERS
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-IKE from protocol udp
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-IKE from destination-port 500
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-IKE then count OLD-IKE-TO-OLD
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-IKE then next term
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-IKE from destination-address 203.0.113.100/32
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-IKE from source-prefix-list OLD-PEERS
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-IKE from protocol udp
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-IKE from destination-port 500
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-IKE then routing-instance OLD-TROMBONE
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ESP from destination-address 203.0.113.100/32
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ESP from source-prefix-list OLD-PEERS
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ESP from protocol esp
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ESP then count OLD-ESP-TO-OLD
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ESP then next term
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-ESP from destination-address 203.0.113.100/32
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-ESP from source-prefix-list OLD-PEERS
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-ESP from protocol esp
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-ESP then routing-instance OLD-TROMBONE
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ICMP from destination-address 203.0.113.100/32
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ICMP from source-prefix-list OLD-PEERS
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ICMP from protocol icmp
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ICMP then count OLD-ICMP-TO-OLD
+set firewall family inet filter IPSEC-TROMBONE term COUNT-OLD-ICMP then next term
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-ICMP from destination-address 203.0.113.100/32
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-ICMP from source-prefix-list OLD-PEERS
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-ICMP from protocol icmp
+set firewall family inet filter IPSEC-TROMBONE term FORWARD-OLD-ICMP then routing-instance OLD-TROMBONE
+set firewall family inet filter IPSEC-TROMBONE term DEFAULT then accept
+set routing-instances OLD-TROMBONE instance-type forwarding
+set routing-instances OLD-TROMBONE routing-options static route 203.0.113.100/32 next-hop 10.44.0.3
+set routing-options interface-routes rib-group inet TROMBONE-RIB
+set routing-options static route 0.0.0.0/0 next-hop 192.0.2.2
+set routing-options static route 10.1.1.0/24 next-hop st0.1
+set routing-options static route 10.100.0.0/24 next-hop 10.44.0.3
+
+
+root@IPBB-CORE> show configuration | display set | except group
+set version 23.4R2-S3.9
+set system host-name IPBB-CORE
+set system ports console log-out-on-disconnect
+set interfaces ge-0/0/1 description TO-SERVER
+set interfaces ge-0/0/1 unit 0 family inet address 10.100.0.1/24
+set interfaces ge-0/0/4 description TO-NEW-SRX-GW
+set interfaces ge-0/0/4 unit 0 family inet address 10.44.0.3/31
+set interfaces ge-0/0/5 description TO-OLD-VSRX-GW
+set interfaces ge-0/0/5 unit 0 family inet address 10.44.0.1/31
+set routing-options static route 10.1.1.0/24 next-hop 10.44.0.2
+set routing-options static route 10.2.2.0/24 next-hop 10.44.0.0
+set routing-options static route 203.0.113.100/32 next-hop 10.44.0.0
