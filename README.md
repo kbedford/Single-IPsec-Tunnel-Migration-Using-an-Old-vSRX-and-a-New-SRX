@@ -812,18 +812,18 @@ IPBB-CORE> ping 10.100.0.10
 This gate must pass before changing AS1273 routing.
 
 ```text
-NEW-SRX-GW> show interfaces filters
-NEW-SRX-GW> show configuration firewall family inet filter IPSEC-TROMBONE | display set
-NEW-SRX-GW> show configuration routing-instances OLD-TROMBONE | display set
-NEW-SRX-GW> show configuration routing-options rib-groups TROMBONE-RIB | display set
-NEW-SRX-GW> show route 192.0.2.2/31 exact
-NEW-SRX-GW> show route 10.44.0.2/31 exact
-NEW-SRX-GW> show route 203.0.113.100/32 exact
-NEW-SRX-GW> show route table OLD-TROMBONE.inet.0 10.44.0.2/31 exact
-NEW-SRX-GW> show route table OLD-TROMBONE.inet.0 10.44.0.3
-NEW-SRX-GW> show route table OLD-TROMBONE.inet.0 203.0.113.100/32 exact
-NEW-SRX-GW> show route table OLD-TROMBONE.inet.0 hidden
-NEW-SRX-GW> show firewall filter IPSEC-TROMBONE
+show interfaces filters
+show configuration firewall family inet filter IPSEC-TROMBONE | display set
+show configuration routing-instances OLD-TROMBONE | display set
+show configuration routing-options rib-groups TROMBONE-RIB | display set
+show route 192.0.2.2/31 exact
+show route 10.44.0.2/31 exact
+show route 203.0.113.100/32 exact
+show route table OLD-TROMBONE.inet.0 10.44.0.2/31 exact
+show route table OLD-TROMBONE.inet.0 10.44.0.3
+show route table OLD-TROMBONE.inet.0 203.0.113.100/32 exact
+show route table OLD-TROMBONE.inet.0 hidden
+show firewall filter IPSEC-TROMBONE
 ```
 
 Required results:
@@ -885,14 +885,14 @@ CE1> show interfaces st0.0 extensive
 Verify the old gateway:
 
 ```text
-OLD-VSRX-GW> show security ike security-associations detail
-OLD-VSRX-GW> show security ike active-peer detail
-OLD-VSRX-GW> show security ipsec security-associations detail
-OLD-VSRX-GW> show security ipsec statistics
-OLD-VSRX-GW> show interfaces terse | match "st0.1|st0.2"
-OLD-VSRX-GW> show route 10.100.0.10
-OLD-VSRX-GW> show security policies hit-count
-OLD-VSRX-GW> show security flow session
+show security ike security-associations detail
+show security ike active-peer detail
+show security ipsec security-associations detail
+show security ipsec statistics
+show interfaces terse | match "st0.1|st0.2"
+show route 10.100.0.10
+show security policies hit-count
+show security flow session
 ```
 
 Verify the new gateway has no SAs:
